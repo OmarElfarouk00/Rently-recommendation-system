@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Owner Dashboard - RentEstate</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Base styles from index.html */
+        :root {
+            --primary-color: #ee7238;
+            --text-color: #2c3e50;
+            --light-gray: #f8f9fa;
+            --border-color: #eaeaea;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: var(--light-gray);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: white;
+            padding: 20px;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .sidebar-menu {
+            margin-top: 40px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .menu-item:hover {
+            background: var(--light-gray);
+        }
+
+        .menu-item.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .vip-badge {
+            background: #ffd700;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .negotiations-list {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .list-header {
+            padding: 20px;
+            background: var(--light-gray);
+            font-weight: bold;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .negotiation-item {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .price-input {
+            width: 100px;
+            padding: 5px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .action-button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .accept-button {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .counter-button {
+            background: var(--warning-color);
+            color: black;
+        }
+
+        .reject-button {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .analytics-section {
+            margin-top: 30px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .analytics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .comment-card {
+            background: var(--light-gray);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .comment-user {
+            font-weight: bold;
+        }
+
+        .comment-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .list-header, .negotiation-item {
+                grid-template-columns: 2fr 1fr 1fr;
+            }
+
+            .negotiation-item > *:nth-child(4),
+            .negotiation-item > *:nth-child(5),
+            .list-header > *:nth-child(4),
+            .list-header > *:nth-child(5) {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="logo">RentEstate</div>
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active">
+                    <i class="fas fa-handshake"></i>
+                    Negotiations
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-home"></i>
+                    My Properties
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-chart-line"></i>
+                    Analytics
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <h1>Negotiations Dashboard</h1>
+                <div class="vip-badge">
+                    <i class="fas fa-crown"></i>
+                    VIP Owner
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Active Negotiations</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">85%</div>
+                    <div class="stat-label">Acceptance Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">24h</div>
+                    <div class="stat-label">Avg. Response Time</div>
+                </div>
+            </div>
+
+            <div class="negotiations-list">
+                <div class="list-header">
+                    <div>User</div>
+                    <div>Property</div>
+                    <div>Offered Price</div>
+                    <div>Counter Offer</div>
+                    <div>Actions</div>
+                </div>
+
+                <div class="negotiation-item">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <img src="/placeholder.svg?height=40&width=40" alt="User">
+                        </div>
+                        <div>
+                            <div>John Doe</div>
+                            <div style="font-size: 0.9rem; color: #666;">5 previous bookings</div>
+                        </div>
+                    </div>
+                    <div>Luxury Villa</div>
+                    <div>$700/night</div>
+                    <div>
+                        <input type="number" class="price-input" value="775" min="0">
+                    </div>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="action-button accept-button">Accept</button>
+                        <button class="action-button counter-button">Counter</button>
+                        <button class="action-button reject-button">Reject</button>
+                    </div>
+                </div>
+
+                <!-- More negotiation items... -->
+            </div>
+
+            <!-- VIP Only Analytics Section -->
+            <div class="analytics-section">
+                <div class="analytics-header">
+                    <h2>Property Engagement</h2>
+                    <div class="vip-badge">VIP Feature</div>
+                </div>
+                <div class="analytics-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">156</div>
+                        <div class="stat-label">Total Likes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">45</div>
+                        <div class="stat-label">New Comments</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">89%</div>
+                        <div class="stat-label">Positive Feedback</div>
+                    </div>
+                </div>
+
+                <h3 style="margin: 20px 0;">Recent Comments</h3>
+                <div style="display: grid; gap: 15px;">
+                    <div class="comment-card">
+                        <div class="comment-header">
+                            <span class="comment-user">Alice Smith</span>
+                            <span class="comment-date">2 hours ago</span>
+                        </div>
+                        <p>Beautiful property! The ocean view is absolutely stunning.</p>
+                    </div>
+                    <div class="comment-card">
+                        <div class="comment-header">
+                            <span class="comment-user">Bob Johnson</span>
+                            <span class="comment-date">Yesterday</span>
+                        </div>
+                        <p>Great amenities and perfect location. Would love to book again!</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Handle counter offer submission
+        document.querySelectorAll('.counter-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const item = this.closest('.negotiation-item');
+                const priceInput = item.querySelector('.price-input');
+                const counterOffer = priceInput.value;
+                
+                // Here you would typically send the counter offer to your backend
+                alert(`Counter offer of $${counterOffer}/night sent!`);
+                
+                // Update UI to show pending state
+                this.textContent = 'Pending';
+                this.disabled = true;
+            });
+        });
+
+        // Handle offer acceptance
+        document.querySelectorAll('.accept-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const item = this.closest('.negotiation-item');
+                
+                // Here you would typically send the acceptance to your backend
+                alert('Offer accepted!');
+                
+                // Update UI
+                item.style.opacity = '0.5';
+                item.querySelector('.price-input').disabled = true;
+                const actions = item.querySelector('div:last-child');
+                actions.innerHTML = '<span style="color: var(--success-color)">Accepted</span>';
+            });
+        });
+
+        // Handle offer rejection
+        document.querySelectorAll('.reject-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const item = this.closest('.negotiation-item');
+                
+                // Here you would typically send the rejection to your backend
+                alert('Offer rejected!');
+                
+                // Update UI
+                item.style.opacity = '0.5';
+                item.querySelector('.price-input').disabled = true;
+                const actions = item.querySelector('div:last-child');
+                actions.innerHTML = '<span style="color: var(--danger-color)">Rejected</span>';
+            });
+        });
+    </script>
+</body>
+</html>

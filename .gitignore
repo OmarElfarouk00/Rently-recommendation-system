@@ -1,0 +1,25 @@
+# .gitignore for GitHub
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# PHP
+frontend/**/uploads/
+frontend/**/config.php
+
+# Node/npm
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VSCode
+.vscode/
+
+# Logs
+*.log
+
+# Environment
+.env

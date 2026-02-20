@@ -1,0 +1,168 @@
+<?php
+// Database configuration
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');     // Change to your MySQL username
+define('DB_PASS', '');         // Change to your MySQL password
+define('DB_NAME', 'propertymanagementsystem1');
+
+// Create database connection
+function connectDB() {
+    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+    
+    // Set charset to ensure proper encoding
+    $conn->set_charset("utf8mb4");
+    
+    return $conn;
+}
+
+// Get database connection
+function getDBConnection() {
+    static $conn = null;
+    
+    if ($conn === null) {
+        $conn = connectDB();
+    }
+    
+    return $conn;
+}
+
+// Close database connection
+function closeDBConnection($conn) {
+    if ($conn) {
+        $conn->close();
+    }
+}
+
+// Prepare and execute a query with parameters
+function executeQuery($sql, $types = null, $params = []) {
+    $conn = getDBConnection();
+    $stmt = $conn->prepare($sql);
+    
+    if ($stmt === false) {
+        die("Error preparing statement: " . $conn->error);
+    }
+    
+    if ($types !== null && $params !== []) {
+        $stmt->bind_param($types, ...$params);
+    }
+    
+    $stmt->execute();
+    
+    return $stmt;
+}
+
+// Get a single row from a query
+function fetchRow($sql, $types = null, $params = []) {
+    $stmt = executeQuery($sql, $types, $params);
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $stmt->close();
+    
+    return $row;
+}
+
+// Get multiple rows from a query
+function fetchRows($sql, $types = null, $params = []) {
+    $stmt = executeQuery($sql, $types, $params);
+    $result = $stmt->get_result();
+    $rows = [];
+    
+    while ($row = $result->fetch_assoc()) {
+        $rows[] = $row;
+    }
+    
+    $stmt->close();
+    
+    return $rows;
+}
+
+// Get a single value from a query
+function fetchValue($sql, $types = null, $params = []) {
+    $row = fetchRow($sql, $types, $params);
+    
+    if ($row) {
+        return reset($row);
+    }
+    
+    return null;
+}
+
+// Insert data into a table
+function insertData($table, $data) {
+    $conn = getDBConnection();
+    $columns = implode(', ', array_keys($data));
+    $placeholders = implode(', ', array_fill(0, count($data), '?'));
+    $types = '';
+    $values = [];
+    
+    foreach ($data as $value) {
+        if (is_int($value)) {
+            $types .= 'i';
+        } elseif (is_float($value)) {
+            $types .= 'd';
+        } elseif (is_string($value)) {
+            $types .= 's';
+        } else {
+            $types .= 'b';
+        }
+        
+        $values[] = $value;
+    }
+    
+    $sql = "INSERT INTO $table ($columns) VALUES ($placeholders)";
+    $stmt = executeQuery($sql, $types, $values);
+    $insertId = $conn->insert_id;
+    $stmt->close();
+    
+    return $insertId;
+}
+
+// Update data in a table
+function updateData($table, $data, $where, $whereTypes, $whereParams) {
+    $conn = getDBConnection();
+    $set = [];
+    $types = '';
+    $values = [];
+    
+    foreach ($data as $column => $value) {
+        $set[] = "$column = ?";
+        
+        if (is_int($value)) {
+            $types .= 'i';
+        } elseif (is_float($value)) {
+            $types .= 'd';
+        } elseif (is_string($value)) {
+            $types .= 's';
+        } else {
+            $types .= 'b';
+        }
+        
+        $values[] = $value;
+    }
+    
+    $sql = "UPDATE $table SET " . implode(', ', $set) . " WHERE $where";
+    $types .= $whereTypes;
+    $params = array_merge($values, $whereParams);
+    
+    $stmt = executeQuery($sql, $types, $params);
+    $affectedRows = $stmt->affected_rows;
+    $stmt->close();
+    
+    return $affectedRows;
+}
+
+// Delete data from a table
+function deleteData($table, $where, $whereTypes, $whereParams) {
+    $sql = "DELETE FROM $table WHERE $where";
+    $stmt = executeQuery($sql, $whereTypes, $whereParams);
+    $affectedRows = $stmt->affected_rows;
+    $stmt->close();
+    
+    return $affectedRows;
+}
+?>

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Negotiations - RentEstate</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Base styles from index.html */
+        :root {
+            --primary-color: #ee7238;
+            --text-color: #2c3e50;
+            --light-gray: #f8f9fa;
+            --border-color: #eaeaea;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: var(--light-gray);
+        }
+
+        /* user negotiations */
+.container {
+    max-width: 1200px;
+    margin: 100px auto 40px;
+    padding: 0 20px;
+}
+
+.page-title {
+    margin-bottom: 30px;
+}
+
+.page-title h1 {
+    font-size: 2rem;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.negotiation-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.property-info {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.property-image {
+    width: 200px;
+    height: 150px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.property-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.property-details {
+    flex: 1;
+}
+
+.property-title {
+    font-size: 1.2rem;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.property-location {
+    color: #666;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.negotiation-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    background: var(--light-gray);
+    border-radius: 8px;
+}
+
+.price-info {
+    text-align: center;
+}
+
+.price-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.price-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.status-pending {
+    background: var(--warning-color);
+    color: #000;
+}
+
+.status-accepted {
+    background: var(--success-color);
+    color: white;
+}
+
+.status-rejected {
+    background: var(--danger-color);
+    color: white;
+}
+
+.negotiation-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.action-button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+}
+
+.primary-button {
+    background: var(--primary-color);
+    color: white;
+}
+
+.primary-button:hover {
+    background: #d65b1e;
+}
+
+.secondary-button {
+    background: var(--light-gray);
+    color: var(--text-color);
+}
+
+.secondary-button:hover {
+    background: #e9ecef;
+}
+
+.timeline {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.timeline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 10px 0;
+}
+
+.timeline-icon {
+    width: 30px;
+    height: 30px;
+    background: var(--light-gray);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.timeline-content {
+    flex: 1;
+}
+
+.timeline-date {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+@media (max-width: 768px) {
+    .property-info {
+        flex-direction: column;
+    }
+
+    .property-image {
+        width: 100%;
+    }
+
+    .negotiation-details {
+        grid-template-columns: 1fr;
+    }
+}
+ 
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        
+        <div class="header-content">
+            <a href="index.html" class="logo">RentEstate</a>
+            
+             <div class="search-bar">
+                <input type="text" class="search-input" placeholder="Search destinations, properties..." readonly>
+            </div>
+
+            <div class="user-menu">
+                
+                <div class="user-menu-item menu-dropdown">
+                    <i class="fas fa-bars" id="menuToggle"></i>
+                    <div class="menu-content" id="menuContent">
+
+
+                        <div class="menu-divider"></div>
+                        <a href="#" class="menu-item">
+                            <i class="fas fa-question-circle"></i>
+                            Help Center
+                        </a>
+
+                        <a href="#" class="menu-item" id="language-toggle">
+                            <i class="fas fa-globe"></i>
+                            Language
+                        </a>
+                        <div class="language-menu" id="language-menu">
+                            <ul>
+                                <li><a href="#" data-lang="en">English</a></li>
+                                <li><a href="#" data-lang="es">Spanish</a></li>
+                                <li><a href="#" data-lang="fr">French</a></li>
+                                <li><a href="#" data-lang="de">German</a></li>
+                                <li><a href="#" data-lang="zh">Chinese</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="menu-divider"></div>
+                        <a href="#" class="menu-item">
+                            <i class="fas fa-info-circle"></i>
+                            About Us
+                        </a>
+                        <a href="index_after.html" class="menu-item">
+                            <i class="fas fa-home"></i>
+                            HomePage
+                        </a>
+
+                    <div class="menu-divider"></div>
+                        <a href="index.html" class="menu-item">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    
+    </header>
+
+
+    <div class="container">
+        <div class="page-title">
+            <h1>My Negotiations</h1>
+            <p>Track and manage your property negotiations</p>
+        </div>
+
+        <!-- Active Negotiation Card -->
+        <div class="negotiation-card">
+            <div class="property-info">
+                <div class="property-image">
+                    <img src="/placeholder.svg?height=150&width=200" alt="Luxury Apartment">
+                </div>
+                <div class="property-details">
+                    <h3 class="property-title">Luxury Beachfront Villa</h3>
+                    <div class="property-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Miami Beach, Florida
+                    </div>
+                    <span class="status-badge status-pending">Pending Response</span>
+                </div>
+            </div>
+
+            <div class="negotiation-details">
+                <div class="price-info">
+                    <div class="price-label">Listed Price</div>
+                    <div class="price-value">$850/night</div>
+                </div>
+                <div class="price-info">
+                    <div class="price-label">Your Offer</div>
+                    <div class="price-value">$700/night</div>
+                </div>
+                <div class="price-info">
+                    <div class="price-label">Counter Offer</div>
+                    <div class="price-value">$775/night</div>
+                </div>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-icon">
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">Today, 2:30 PM</div>
+                        <p>Counter offer received from property owner</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-icon">
+                        <i class="fas fa-comment"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">Yesterday, 4:15 PM</div>
+                        <p>You sent an offer for $700/night</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="negotiation-actions">
+                <button class="action-button secondary-button">Decline</button>
+                <button class="action-button primary-button">Accept Offer</button>
+            </div>
+        </div>
+
+        <!-- Past Negotiation Card -->
+        <div class="negotiation-card">
+            <div class="property-info">
+                <div class="property-image">
+                    <img src="/placeholder.svg?height=150&width=200" alt="Downtown Apartment">
+                </div>
+                <div class="property-details">
+                    <h3 class="property-title">Downtown Modern Apartment</h3>
+                    <div class="property-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        New York City, NY
+                    </div>
+                    <span class="status-badge status-accepted">Accepted</span>
+                </div>
+            </div>
+
+            <div class="negotiation-details">
+                <div class="price-info">
+                    <div class="price-label">Listed Price</div>
+                    <div class="price-value">$500/night</div>
+                </div>
+                <div class="price-info">
+                    <div class="price-label">Final Price</div>
+                    <div class="price-value">$450/night</div>
+                </div>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">2 days ago</div>
+                        <p>Negotiation completed successfully</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Handle offer acceptance
+        document.querySelectorAll('.primary-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const card = this.closest('.negotiation-card');
+                const statusBadge = card.querySelector('.status-badge');
+                statusBadge.className = 'status-badge status-accepted';
+                statusBadge.textContent = 'Accepted';
+                
+                // Add acceptance to timeline
+                const timeline = card.querySelector('.timeline');
+                const newTimelineItem = document.createElement('div');
+                newTimelineItem.className = 'timeline-item';
+                newTimelineItem.innerHTML = `
+                    <div class="timeline-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">Just now</div>
+                        <p>You accepted the counter offer</p>
+                    </div>
+                `;
+                timeline.insertBefore(newTimelineItem, timeline.firstChild);
+                
+                // Disable action buttons
+                const actions = card.querySelector('.negotiation-actions');
+                actions.style.display = 'none';
+            });
+        });
+
+        // Handle offer rejection
+        document.querySelectorAll('.secondary-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const card = this.closest('.negotiation-card');
+                const statusBadge = card.querySelector('.status-badge');
+                statusBadge.className = 'status-badge status-rejected';
+                statusBadge.textContent = 'Rejected';
+                
+                // Add rejection to timeline
+                const timeline = card.querySelector('.timeline');
+                const newTimelineItem = document.createElement('div');
+                newTimelineItem.className = 'timeline-item';
+                newTimelineItem.innerHTML = `
+                    <div class="timeline-icon">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">Just now</div>
+                        <p>You declined the counter offer</p>
+                    </div>
+                `;
+                timeline.insertBefore(newTimelineItem, timeline.firstChild);
+                
+                // Disable action buttons
+                const actions = card.querySelector('.negotiation-actions');
+                actions.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Real Estate</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+        }
+
+        /* Navigation Styles */
+        .navbar {
+            background: white;
+            padding: 1rem 5%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #23d5ab;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-item {
+            position: relative;
+            padding: 0.5rem 0;
+            cursor: pointer;
+            color: #2c3e50;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            min-width: 200px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 1rem 0;
+        }
+
+        .nav-item:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+            color: #2c3e50;
+            transition: background-color 0.3s;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Hero Section Styles */
+        .hero {
+            margin-top: 80px;
+            padding: 3rem 5%;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/placeholder.svg?height=500&width=1920');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding-top: 100px;
+            padding-bottom: 100px;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Search Section Styles */
+        .search-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 800px;
+            margin: -50px auto 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .search-bar {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .search-button {
+            padding: 0.8rem 1.5rem;
+            background: #23d5ab;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .search-button:hover {
+            background: #049674;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .filter-select {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        /* Property Cards Section */
+        .properties {
+            padding: 3rem 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .properties-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .property-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .property-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .property-image {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .property-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 1rem;
+        }
+
+        .image-nav button {
+            background: rgba(255,255,255,0.8);
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .property-info {
+            padding: 1rem;
+        }
+
+        .property-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .property-details {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .property-rating {
+            color: #f1c40f;
+            margin-top: 0.5rem;
+        }
+
+        .property-location {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #7f8c8d;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">RentEstate</div>
+            <div class="nav-links">
+                <div class="nav-item">
+                    Rent
+                    <div class="dropdown-content">
+                        <div class="dropdown-item">Apartments</div>
+                        <div class="dropdown-item">Houses</div>
+                        <div class="dropdown-item">Villas</div>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    Buy
+                    <div class="dropdown-content">
+                        <div class="dropdown-item">New Properties</div>
+                        <div class="dropdown-item">Featured Listings</div>
+                        <div class="dropdown-item">Price Reduced</div>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    Sell
+                    <div class="dropdown-content">
+                        <div class="dropdown-item">List Property</div>
+                        <div class="dropdown-item">Property Valuation</div>
+                        <div class="dropdown-item">Selling Guide</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Find Your Dream Home</h1>
+        <p>Discover the perfect property that matches your lifestyle</p>
+    </section>
+
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search by location, property type...">
+            <button class="search-button">Search</button>
+        </div>
+        <div class="filters">
+            <select class="filter-select">
+                <option value="">Property Type</option>
+                <option value="apartment">Apartment</option>
+                <option value="house">House</option>
+                <option value="villa">Villa</option>
+            </select>
+            <select class="filter-select">
+                <option value="">Price Range</option>
+                <option value="0-1000">$0 - $1,000</option>
+                <option value="1000-2000">$1,000 - $2,000</option>
+                <option value="2000+">$2,000+</option>
+            </select>
+            <input type="date" class="filter-select" placeholder="Check-in Date">
+            <select class="filter-select">
+                <option value="">Rating</option>
+                <option value="5">5 Stars</option>
+                <option value="4">4+ Stars</option>
+                <option value="3">3+ Stars</option>
+            </select>
+        </div>
+    </section>
+
+    <!-- Properties Section -->
+    <section class="properties">
+        <div class="properties-grid">
+            <!-- Property Card 1 -->
+            <div class="property-card" onclick="location.href='property-detail.html'">
+                <div class="property-image">
+                    <img src="/placeholder.svg?height=200&width=300" alt="Property 1">
+                    <div class="image-nav">
+                        <button><i class="fas fa-chevron-left"></i></button>
+                        <button><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="property-info">
+                    <div class="property-price">$2,500/month</div>
+                    <div class="property-details">
+                        3 bed • 2 bath • 1,200 sqft
+                    </div>
+                    <div class="property-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        4.5
+                    </div>
+                    <div class="property-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Downtown, City
+                    </div>
+                </div>
+            </div>
+
+            <!-- Property Card 2 -->
+            <div class="property-card" onclick="location.href='property-detail.html'">
+                <div class="property-image">
+                    <img src="/placeholder.svg?height=200&width=300" alt="Property 2">
+                    <div class="image-nav">
+                        <button><i class="fas fa-chevron-left"></i></button>
+                        <button><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="property-info">
+                    <div class="property-price">$3,200/month</div>
+                    <div class="property-details">
+                        4 bed • 3 bath • 1,800 sqft
+                    </div>
+                    <div class="property-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        5.0
+                    </div>
+                    <div class="property-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Suburb Area, City
+                    </div>
+                </div>
+            </div>
+
+            <!-- Property Card 3 -->
+            <div class="property-card" onclick="location.href='property-detail.html'">
+                <div class="property-image">
+                    <img src="/placeholder.svg?height=200&width=300" alt="Property 3">
+                    <div class="image-nav">
+                        <button><i class="fas fa-chevron-left"></i></button>
+                        <button><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="property-info">
+                    <div class="property-price">$1,800/month</div>
+                    <div class="property-details">
+                        2 bed • 1 bath • 900 sqft
+                    </div>
+                    <div class="property-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="far fa-star"></i>
+                        4.0
+                    </div>
+                    <div class="property-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        City Center, City
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Image Carousel functionality
+        document.querySelectorAll('.property-card').forEach(card => {
+            const images = [
+                '/placeholder.svg?height=200&width=300',
+                '/placeholder.svg?height=200&width=300&text=Image+2',
+                '/placeholder.svg?height=200&width=300&text=Image+3'
+            ];
+            let currentImageIndex = 0;
+            
+            const img = card.querySelector('img');
+            const prevBtn = card.querySelector('.fa-chevron-left').parentElement;
+            const nextBtn = card.querySelector('.fa-chevron-right').parentElement;
+            
+            prevBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+                img.src = images[currentImageIndex];
+            });
+            
+            nextBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                currentImageIndex = (currentImageIndex + 1) % images.length;
+                img.src = images[currentImageIndex];
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+<div class="property-gallery">
+    <div class="main-image">
+        <img src="/placeholder.svg?height=500&width=800" alt="<?php echo htmlspecialchars($property['title']); ?>">
+        <button class="favorite-btn <?php echo $isFavorite ? 'active' : ''; ?>" data-property-id="<?php echo $property['id_property']; ?>">
+            <i class="<?php echo $isFavorite ? 'fas' : 'far'; ?> fa-heart"></i>
+        </button>
+        <?php if ($property['is_vip']): ?>
+            <div class="vip-badge">VIP Property</div>
+        <?php endif; ?>
+    </div>
+    <div class="gallery-grid">
+        <div class="gallery-item">
+            <img src="/placeholder.svg?height=250&width=400" alt="Property Image">
+        </div>
+        <div class="gallery-item">
+            <img src="/placeholder.svg?height=250&width=400" alt="Property Image">
+            <div class="view-all-photos">
+                <i class="fas fa-images"></i> View All Photos
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,57 @@
+<?php
+// Include initialization file
+require_once '../includes/init.php';
+
+// Require admin login
+if (!isAdminLoggedIn()) {
+    sendJsonResponse(['error' => 'Unauthorized'], 401);
+}
+
+// Get chart type
+$chartType = isset($_GET['chart']) ? sanitizeInput($_GET['chart']) : '';
+
+// Get chart data
+switch ($chartType) {
+    case 'propertyTypes':
+        $data = getTotalPropertiesByType();
+        sendJsonResponse($data);
+        break;
+        
+    case 'monthlyRegistrations':
+        $data = getMonthlyClientRegistrations();
+        sendJsonResponse($data);
+        break;
+        
+    case 'propertiesByCity':
+        $data = getPropertiesByCity();
+        sendJsonResponse($data);
+        break;
+        
+    case 'topRentedProperties':
+        $data = getTopRentedProperties();
+        sendJsonResponse($data);
+        break;
+        
+    case 'latestClients':
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 5;
+        $data = getLatestClients($limit);
+        sendJsonResponse($data);
+        break;
+        
+    case 'latestNegotiations':
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 5;
+        $data = getLatestNegotiations($limit);
+        sendJsonResponse($data);
+        break;
+        
+    case 'latestReports':
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 5;
+        $data = getLatestPropertyReports($limit);
+        sendJsonResponse($data);
+        break;
+        
+    default:
+        sendJsonResponse(['error' => 'Invalid chart type'], 400);
+        break;
+}
+?>

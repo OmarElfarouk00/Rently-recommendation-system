@@ -1,0 +1,178 @@
+<?php
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Check if admin table exists, if not create it
+function initAdminTable() {
+    $conn = getDBConnection();
+    
+    // Check if admin table exists
+    $tableExists = $conn->query("SHOW TABLES LIKE 'Admin'")->num_rows > 0;
+    
+    if (!$tableExists) {
+        // Create admin table
+        $sql = "CREATE TABLE Admin (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            username VARCHAR(50) NOT NULL UNIQUE,
+            password VARCHAR(255) NOT NULL,
+            email VARCHAR(100) NOT NULL,
+            full_name VARCHAR(100) NOT NULL,
+            role VARCHAR(20) NOT NULL DEFAULT 'admin',
+            last_login DATETIME,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )";
+        
+        if ($conn->query($sql) === TRUE) {
+            // Create default admin user (username: admin, password: admin123)
+            $username = 'admin';
+            $password = password_hash('admin123', PASSWORD_DEFAULT);
+            $email = 'admin@example.com';
+            $fullName = 'Administrator';
+            
+            $sql = "INSERT INTO Admin (username, password, email, full_name, role) 
+                    VALUES (?, ?, ?, ?, 'super_admin')";
+            
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ssss", $username, $password, $email, $fullName);
+            $stmt->execute();
+            $stmt->close();
+        }
+    }
+}
+
+// Initialize admin table
+initAdminTable();
+
+// Authenticate admin user
+function authenticateAdmin($username, $password) {
+    $sql = "SELECT id, username, password, role, full_name FROM Admin WHERE username = ?";
+    $admin = fetchRow($sql, "s", [$username]);
+    
+    if ($admin && password_verify($password, $admin['password'])) {
+        // Update last login time
+        $updateSql = "UPDATE Admin SET last_login = NOW() WHERE id = ?";
+        executeQuery($updateSql, "i", [$admin['id']]);
+        
+        // Set session variables
+        $_SESSION['admin_id'] = $admin['id'];
+        $_SESSION['admin_username'] = $admin['username'];
+        $_SESSION['admin_role'] = $admin['role'];
+        $_SESSION['admin_name'] = $admin['full_name'];
+        $_SESSION['admin_logged_in'] = true;
+        $_SESSION['admin_login_time'] = time();
+        
+        return true;
+    }
+    
+    return false;
+}
+
+// Check if admin is logged in
+function isAdminLoggedIn() {
+    if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+        // Check if session has expired (30 minutes)
+        $sessionTimeout = 30 * 60; // 30 minutes in seconds
+        
+        if (isset($_SESSION['admin_login_time']) && (time() - $_SESSION['admin_login_time'] > $sessionTimeout)) {
+            // Session has expired, log out
+            logoutAdmin();
+            return false;
+        }
+        // Update login time
+        $_SESSION['admin_login_time'] = time();
+        return true;
+    }
+    
+    return false;
+}
+
+// Require admin login
+function requireAdminLogin() {
+    if (!isAdminLoggedIn()) {
+        // Redirect to login page
+        header("Location: login.php");
+        exit;
+    }
+}
+
+// Logout admin
+function logoutAdmin() {
+    // Unset all session variables
+    $_SESSION = [];
+    
+    // Destroy the session
+    session_destroy();
+}
+
+// Get current admin info
+function getCurrentAdmin() {
+    if (isAdminLoggedIn()) {
+        $adminId = $_SESSION['admin_id'];
+        $sql = "SELECT id, username, email, full_name, role, last_login FROM Admin WHERE id = ?";
+        return fetchRow($sql, "i", [$adminId]);
+    }
+    
+    return null;
+}
+
+// Check if admin has specific role
+function hasAdminRole($role) {
+    if (isAdminLoggedIn()) {
+        return $_SESSION['admin_role'] === $role;
+    }
+    
+    return false;
+}
+
+// Check if admin has permission
+function hasAdminPermission($permission) {
+    if (isAdminLoggedIn()) {
+        // Super admin has all permissions
+        if ($_SESSION['admin_role'] === 'super_admin') {
+            return true;
+        }
+        
+        // Check specific permissions based on role
+        $adminRole = $_SESSION['admin_role'];
+        
+        // Define permissions for each role
+        $rolePermissions = [
+            'admin' => [
+                'view_dashboard', 'manage_clients', 'manage_properties', 
+                'manage_negotiations', 'view_reports'
+            ],
+            'editor' => [
+                'view_dashboard', 'view_clients', 'view_properties', 
+                'view_negotiations', 'view_reports'
+            ]
+        ];
+        
+        if (isset($rolePermissions[$adminRole])) {
+            return in_array($permission, $rolePermissions[$adminRole]);
+        }
+    }
+    
+    return false;
+}
+
+// Generate CSRF token
+function generateCSRFToken() {
+    if (!isset($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    
+    return $_SESSION['csrf_token'];
+}
+
+// Verify CSRF token
+function verifyCSRFToken($token) {
+    if (isset($_SESSION['csrf_token']) && $_SESSION['csrf_token'] === $token) {
+        return true;
+    }
+    
+    return false;
+}
+?>
